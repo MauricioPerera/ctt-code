@@ -393,7 +393,6 @@ new BrowserWindow({
     x: 100,
     y: 100,
   },
-  titleBarStyle: "hiddenInset",
 });
 
 console.log("CTT Code started!");
