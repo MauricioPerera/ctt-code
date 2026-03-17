@@ -11,8 +11,9 @@
     "build:stable": "vite build && electrobun build --env=stable"
   },
   "dependencies": {
-    "electrobun": "latest",
-    "@anthropic-ai/sdk": "^0.39.0"
+    "@anthropic-ai/sdk": "^0.39.0",
+    "bun-pty": "^0.4.8",
+    "electrobun": "latest"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -10,12 +10,6 @@ export default {
     bun: {
       entrypoint: "src/bun/index.ts",
     },
-    views: {
-      mainview: {
-        entrypoint: "src/mainview/main.tsx",
-        minify: true,
-      },
-    },
     copy: {
       "dist/index.html": "views/mainview/index.html",
       "dist/assets": "views/mainview/assets",

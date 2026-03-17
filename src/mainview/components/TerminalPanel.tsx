@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import "@xterm/xterm/css/xterm.css";
 
 type Props = {
   projectPath: string | null;
