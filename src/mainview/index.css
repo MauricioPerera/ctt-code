@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #11111b;
+}
+::-webkit-scrollbar-thumb {
+  background: #313244;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #45475a;
+}
+
+/* Drag region for custom titlebar */
+.drag-region {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+/* Monaco editor overrides */
+.monaco-editor {
+  font-family: "JetBrains Mono", "Fira Code", monospace !important;
+}
+
+/* File tree hover */
+.file-entry:hover {
+  background: rgba(49, 50, 68, 0.5);
+}
+.file-entry.active {
+  background: rgba(203, 166, 247, 0.15);
+  color: #cba6f7;
+}
+
+/* Split pane resize handle */
+.resize-handle {
+  cursor: col-resize;
+  transition: background 0.15s;
+}
+.resize-handle:hover {
+  background: #cba6f7;
+}
+
+/* AI chat styling */
+.ai-message pre {
+  background: #181825;
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.ai-message code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+}
