@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
+import { rpc } from "../rpc";
 import type { ChatMessage } from "../types";
 
 type Props = {
@@ -51,16 +52,14 @@ export function AiPanel({ projectPath, activeFile, onInsertCode }: Props) {
       let reply: string;
 
       if (activeMode === "execute") {
-        // @ts-ignore
-        const result = await window.rpc?.request?.cttExecute?.({
+        const result = await rpc.request.cttExecute({
           goal: text,
         });
         reply = result?.success
           ? `✅ **Execution successful**\n\n${JSON.stringify(result.plan, null, 2)}`
           : `❌ **Execution failed**: ${result?.error ?? "Unknown error"}`;
       } else if (activeMode === "search") {
-        // @ts-ignore
-        const result = await window.rpc?.request?.cttSearch?.({
+        const result = await rpc.request.cttSearch({
           query: text,
           limit: 10,
         });
@@ -70,8 +69,7 @@ export function AiPanel({ projectPath, activeFile, onInsertCode }: Props) {
           : "No results found.";
       } else {
         // Chat mode — use ctt recall + response
-        // @ts-ignore
-        const result = await window.rpc?.request?.cttChat?.({
+        const result = await rpc.request.cttChat({
           message: text,
           projectPath: projectPath ?? undefined,
         });

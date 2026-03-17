@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import "@xterm/xterm/css/xterm.css";
+import { rpc } from "../rpc";
 
 type Props = {
   projectPath: string | null;
@@ -64,8 +65,7 @@ export function TerminalPanel({ projectPath }: Props) {
 
       // Create PTY on main process
       try {
-        // @ts-ignore
-        const result = await window.rpc?.request?.terminalCreate?.({
+        const result = await rpc.request.terminalCreate({
           cols: term.cols,
           rows: term.rows,
           cwd: projectPath ?? undefined,
@@ -76,8 +76,7 @@ export function TerminalPanel({ projectPath }: Props) {
 
           // Send keystrokes to PTY
           term.onData((data: string) => {
-            // @ts-ignore
-            window.rpc?.request?.terminalWrite?.({
+            rpc.request.terminalWrite({
               terminalId: result.terminalId,
               data,
             });
@@ -85,8 +84,7 @@ export function TerminalPanel({ projectPath }: Props) {
 
           // Handle resize
           term.onResize(({ cols, rows }: { cols: number; rows: number }) => {
-            // @ts-ignore
-            window.rpc?.request?.terminalResize?.({
+            rpc.request.terminalResize({
               terminalId: result.terminalId,
               cols,
               rows,
@@ -97,22 +95,19 @@ export function TerminalPanel({ projectPath }: Props) {
         term.writeln(`\x1b[31mFailed to create terminal: ${err}\x1b[0m`);
       }
 
-      // Listen for PTY output from main process
-      // @ts-ignore
-      window.rpc?.on?.terminalData?.((payload: { terminalId: string; data: string }) => {
-        if (terminalRef.current) {
-          terminalRef.current.write(payload.data);
-        }
-      });
-
-      // @ts-ignore
-      window.rpc?.on?.terminalExit?.((payload: { terminalId: string; exitCode: number | null }) => {
-        if (terminalRef.current) {
-          terminalRef.current.writeln(
-            `\r\n\x1b[33m[Process exited with code ${payload.exitCode}]\x1b[0m`,
-          );
-        }
-      });
+      // Listen for PTY output from main process via custom events
+      const handleTermData = (e: Event) => {
+        const { data } = (e as CustomEvent).detail;
+        terminalRef.current?.write(data);
+      };
+      const handleTermExit = (e: Event) => {
+        const { exitCode } = (e as CustomEvent).detail;
+        terminalRef.current?.writeln(
+          `\r\n\x1b[33m[Process exited with code ${exitCode}]\x1b[0m`,
+        );
+      };
+      window.addEventListener("ctt:terminalData", handleTermData);
+      window.addEventListener("ctt:terminalExit", handleTermExit);
     }
 
     initTerminal();
@@ -128,10 +123,11 @@ export function TerminalPanel({ projectPath }: Props) {
     return () => {
       disposed = true;
       resizeObserver.disconnect();
+      window.removeEventListener("ctt:terminalData", handleTermData);
+      window.removeEventListener("ctt:terminalExit", handleTermExit);
       terminalRef.current?.dispose();
       if (terminalId) {
-        // @ts-ignore
-        window.rpc?.request?.terminalKill?.({ terminalId });
+        rpc.request.terminalKill({ terminalId });
       }
     };
   }, [projectPath]);

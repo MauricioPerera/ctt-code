@@ -5,6 +5,7 @@ import { EditorPane } from "./components/EditorPane";
 import { AiPanel } from "./components/AiPanel";
 import { TerminalPanel } from "./components/TerminalPanel";
 import { StatusBar } from "./components/StatusBar";
+import { rpc } from "./rpc";
 import type { FileEntry } from "./types";
 
 export type OpenTab = {
@@ -33,8 +34,7 @@ export default function App() {
   // ── Project Management ─────────────────────────────────────────
   const handleOpenFolder = useCallback(async () => {
     try {
-      // @ts-ignore — Electrobun RPC injected at runtime
-      const result = await window.rpc?.request?.openFolder?.();
+      const result = await rpc.request.openFolder({});
       if (result?.paths?.[0]) {
         const path = result.paths[0];
         setProjectPath(path);
@@ -60,8 +60,7 @@ export default function App() {
       }
 
       try {
-        // @ts-ignore
-        const { content, language } = await window.rpc?.request?.readFile?.({
+        const { content, language } = await rpc.request.readFile({
           projectPath,
           filePath: file.path,
         });
@@ -110,8 +109,7 @@ export default function App() {
       if (!tab || !projectPath) return;
 
       try {
-        // @ts-ignore
-        await window.rpc?.request?.writeFile?.({
+        await rpc.request.writeFile({
           projectPath,
           filePath: tab.path,
           content: tab.content,

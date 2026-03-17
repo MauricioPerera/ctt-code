@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { rpc } from "../rpc";
 import type { FileEntry } from "../types";
 
 type Props = {
@@ -33,8 +34,7 @@ export function Sidebar({ projectPath, onOpenFile, onOpenFolder }: Props) {
     async (relativePath: string): Promise<FileEntry[]> => {
       if (!projectPath) return [];
       try {
-        // @ts-ignore
-        const result = await window.rpc?.request?.listFiles?.({
+        const result = await rpc.request.listFiles({
           projectPath,
           relativePath: relativePath || undefined,
         });
@@ -90,8 +90,7 @@ export function Sidebar({ projectPath, onOpenFile, onOpenFolder }: Props) {
     }
     const timeout = setTimeout(async () => {
       try {
-        // @ts-ignore
-        const result = await window.rpc?.request?.searchFiles?.({
+        const result = await rpc.request.searchFiles({
           projectPath,
           query: searchQuery,
         });
